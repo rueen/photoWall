@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+git config --global user.email "rueenli@gmail.com"
+git config --global user.name "rueen"
+
 # 发生错误时终止
 set -e
 
