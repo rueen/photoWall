@@ -9,10 +9,10 @@ set -e
 # 构建
 npm install
 npm run build
-npm run preview
+# npm run preview
 
 # # 进入构建文件夹
-# cd dist
+cd dist
 
 # # 放置 .nojekyll 以绕过 Jekyll 的处理。
 # echo > .nojekyll
