@@ -8,4 +8,5 @@ on:
 jobs:
   build-and-deploy:
     steps:
-      run: /deploy.sh
+      - name: Deploy 🚀
+        run: /deploy.sh
