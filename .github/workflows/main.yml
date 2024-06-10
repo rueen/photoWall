@@ -6,8 +6,10 @@ on:
       - main  # 更改为你的默认分支
 
 jobs:
-  build-and-deploy:
-    runs-on: ubuntu-latest
+  build:  # 工作流程中的一个作业
+    runs-on: ubuntu-latest  # 运行环境
+
     steps:
-      - name: Deploy 🚀
-        run: ../../deploy.sh
+    - uses: actions/checkout@v2  # 检出代码
+    - name: Run script
+      run: bash ./deploy.sh  # 运行你的 .sh 脚本
