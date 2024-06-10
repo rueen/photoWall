@@ -3,7 +3,8 @@ name: GitHub Pages
 on:
   push:
     branches:
-      - main  # 更改为你的默认分支
+      - main
+      - gh-pages
 
 jobs:
   build:  # 工作流程中的一个作业
