@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Deploy 🚀
-        run: /deploy.sh
+        run: ./deploy.sh
