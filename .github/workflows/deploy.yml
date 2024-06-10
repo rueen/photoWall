@@ -12,9 +12,9 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v2
  
-      - name: Install and Build 🔧👷
+      - name: Build 🔧👷
         run: |
-          npm install
+          npm run build
           npm run preview  # 替换为你的预览命令
       - name: Deploy 🚀
         uses: peaceiris/actions-gh-pages@v3
