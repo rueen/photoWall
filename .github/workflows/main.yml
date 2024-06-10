@@ -1,8 +1,23 @@
-steps:
-- name: Deploy
-  uses: appleboy/ssh-action@master
-  with:
-    host: ${{ secrets.HOST }}
-    username: ${{ secrets.USERNAME }}
-    password: ${{ secrets.PASSWORD }}
-    command: "bash /deploy.sh"
+name: GitHub Pages
+ 
+on:
+  push:
+    branches:
+      - main  # 更改为你的默认分支
+ 
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v2
+ 
+      - name: Build 🔧👷
+        run: |
+          npm run build
+          npm run preview  # 替换为你的预览命令
+      - name: Deploy 🚀
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist  # 替换为你的预览构建目录
