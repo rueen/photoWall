@@ -1,4 +1,13 @@
-steps:
-- name: Deploy
-  uses: appleboy/ssh-action@master
-  run: /deploy.sh
+name: GitHub Pages
+ 
+on:
+  push:
+    branches:
+      - main  # 更改为你的默认分支
+
+jobs:
+  build-and-deploy:
+    steps:
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      run: /deploy.sh
