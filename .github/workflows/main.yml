@@ -13,8 +13,8 @@ jobs:
     - uses: actions/checkout@v2  # 检出代码
     - name: Run script
       with:
-      host: ${{ secrets.HOST }}
-      username: ${{ secrets.USERNAME }}
-      password: ${{ secrets.PASSWORD }}
-      command: "bash ./deploy.sh"
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        command: "bash ./deploy.sh"
       # run: bash ./deploy.sh  # 运行你的 .sh 脚本
