@@ -1,8 +1,8 @@
 /*
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
- * @LastEditors: diaochan
- * @LastEditTime: 2024-06-10 19:55:55
+ * @LastEditors: rueen
+ * @LastEditTime: 2024-06-10 20:36:47
  * @Description: 
  */
 import DATA from './data';
@@ -136,7 +136,7 @@ const showModal = (item) => {
   if(!describe || modalVisible){
     return;
   }
-  pause(item);
+  showRelation(item)
   modalVisible = true;
   const html = `
     <div class="popup">
@@ -159,6 +159,7 @@ const showModal = (item) => {
         modalVisible = false;
         modal.classList.remove('visible');
         play();
+        clearSVG();
       }
     });    
   } else {
@@ -170,8 +171,8 @@ const showModal = (item) => {
   }
 }
 
-// 暂停所有动画
-const pause = (item) => {
+// 显示关系
+const showRelation = (item) => {
   let _delay = 0;
   const relatedIds = item.relatedIds;
   relatedIds.forEach(id => {
@@ -192,28 +193,12 @@ const pause = (item) => {
     }
   })
   setTimeout(() => {
-    const items = document.querySelectorAll('.item');
-    items.forEach(function(item) {
-      // 检查元素是否正在播放动画
-      if (getComputedStyle(item).animationName !== 'none') {
-        // 如果正在播放动画，设置animation-play-state为'paused'
-        item.style.animationPlayState = 'paused';
-      }
-    });
-    if(createItemTimer){
-      clearInterval(createItemTimer);
-    }
+    pause();
     createLine(item);
   }, _delay)
 }
 
-// 启动所有动画
-const play = () => {
-  const items = document.querySelectorAll('.item');
-  items.forEach(function(item) {
-    item.style.animationPlayState = 'running';
-  });
-  clearSVG();
+const restartTimer = () => {
   if(createItemTimer){
     clearInterval(createItemTimer);
   }
@@ -222,6 +207,30 @@ const play = () => {
       createItem();
     }
   }, delay);
+}
+
+// 暂停所有动画
+const pause = () => {
+  const items = document.querySelectorAll('.item');
+  items.forEach(function(item) {
+    // 检查元素是否正在播放动画
+    if (getComputedStyle(item).animationName !== 'none') {
+      // 如果正在播放动画，设置animation-play-state为'paused'
+      item.style.animationPlayState = 'paused';
+    }
+  });
+  if(createItemTimer){
+    clearInterval(createItemTimer);
+  }
+}
+
+// 启动所有动画
+const play = () => {
+  const items = document.querySelectorAll('.item');
+  items.forEach(function(item) {
+    item.style.animationPlayState = 'running';
+  });
+  restartTimer();
 }
 
 // 移出屏幕 重新排队
@@ -272,13 +281,14 @@ const createItem = (id = null) => {
   itemElm.addEventListener('mouseenter', function() {
     // 鼠标进入事件触发
     if(!modalVisible){
-      pause(firstInLine);
+      showRelation(firstInLine)
     }
   });
   itemElm.addEventListener('mouseleave', function() {
     // 鼠标离开事件触发
     if(!modalVisible){
       play();
+      clearSVG();
     }
   });
   itemElm.addEventListener('click', function() {
@@ -286,14 +296,7 @@ const createItem = (id = null) => {
     showModal(firstInLine)
   });
   listElm.appendChild(itemElm);
-  if(createItemTimer){
-    clearInterval(createItemTimer);
-  }
-  createItemTimer = setInterval(() => {
-    if(pendingList.length){
-      createItem();
-    }
-  }, delay);
+  restartTimer();
 }
 const getData = () => {
   pendingList = [...DATA];
@@ -341,8 +344,10 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener("visibilitychange", function() {
     if (document.hidden) {
       // 页面不可见时
+      pause();
     } else {
       // 页面可见时
+      play();
     }
   });
   const fullscreenBtn = document.getElementById('fullscreen');
