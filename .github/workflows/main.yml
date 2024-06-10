@@ -8,6 +8,4 @@ on:
 jobs:
   build-and-deploy:
     steps:
-    - name: Deploy
-      uses: appleboy/ssh-action@master
       run: /deploy.sh
