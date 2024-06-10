@@ -2,11 +2,11 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-10 20:36:47
+ * @LastEditTime: 2024-06-10 21:09:39
  * @Description: 
  */
 import DATA from './data';
-import { debounce } from './public/lib';
+import { debounce, isItemOrChild } from './public/lib';
 
 const existedPosition = []; // 已存在的坐标
 const positionSize = 30; // 坐标距离 避免重叠
@@ -19,6 +19,7 @@ let screenWidth = window.innerWidth;
 let screenHeight = window.innerHeight;
 let itemSize = parseInt(Math.min(screenWidth, screenHeight)/ 8); // 粒子尺寸 px
 let duration= Math.ceil(screenWidth / baseSpeed) * 1000;
+let isPause = false; // 页面是否已暂停
 // 调整布局
 const resize = () => {
   screenWidth = window.innerWidth;
@@ -79,7 +80,7 @@ const getItemCenter = (id) => {
 
 // 画线
 const drawLine = ({
-  x1, y1, x2, y2, id1, id2
+  x1, y1, x2, y2, id1, id2, relatedLine
 }) => {
   const svg = document.getElementById('svg');
   if(!svg.getElementById(`${id1}_${id2}`)){
@@ -96,17 +97,20 @@ const drawLine = ({
 // 创建连接线
 const createLine = (item) => {
   const itemPosition = getItemCenter(item.id);
+  const relatedLine = [];
   item.relatedIds.forEach(id => {
     const elm = document.getElementById(`item_${id}`);
     if(elm){
       const relatedPosition = getItemCenter(id);
+      relatedLine.push(`${item.id}_${id}`);
       drawLine({
         x1: itemPosition.x,
         y1: itemPosition.y,
         x2: relatedPosition.x,
         y2: relatedPosition.y,
         id1: item.id,
-        id2: id
+        id2: id,
+        relatedLine
       });
     }
   })
@@ -211,6 +215,7 @@ const restartTimer = () => {
 
 // 暂停所有动画
 const pause = () => {
+  isPause = true;
   const items = document.querySelectorAll('.item');
   items.forEach(function(item) {
     // 检查元素是否正在播放动画
@@ -226,6 +231,7 @@ const pause = () => {
 
 // 启动所有动画
 const play = () => {
+  isPause = false;
   const items = document.querySelectorAll('.item');
   items.forEach(function(item) {
     item.style.animationPlayState = 'running';
@@ -341,21 +347,31 @@ function toggleFullScreen() {
 document.addEventListener('DOMContentLoaded', () => {
   addStyle();
   getData();
-  document.addEventListener("visibilitychange", function() {
-    if (document.hidden) {
-      // 页面不可见时
-      pause();
-    } else {
-      // 页面可见时
-      play();
-    }
-  });
-  const fullscreenBtn = document.getElementById('fullscreen');
-  fullscreenBtn.addEventListener('click', toggleFullScreen);
-  document.addEventListener('fullscreenchange', function(event) {
-    resize();
-  });
-  window.addEventListener('resize', debounce(function(event) {
-    resize();
-  }, 1000));
 });
+document.addEventListener("visibilitychange", function() {
+  if (document.hidden) {
+    // 页面不可见时
+    pause();
+  } else {
+    // 页面可见时
+    play();
+  }
+});
+const fullscreenBtn = document.getElementById('fullscreen');
+fullscreenBtn.addEventListener('click', toggleFullScreen);
+document.addEventListener('fullscreenchange', function(event) {
+  resize();
+});
+window.addEventListener('resize', debounce(function(event) {
+  resize();
+}, 1000));
+// document.body.addEventListener('mousemove', function(event) {
+//   const target = event.target;
+//   if (!isItemOrChild(target, 'item')) {
+//     if(!modalVisible && isPause){
+//       console.log(isPause, '---');
+//       play();
+//       clearSVG();
+//     }
+//   }
+// });

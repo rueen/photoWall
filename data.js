@@ -1,8 +1,8 @@
 /*
  * @Author: diaochan
  * @Date: 2024-06-08 10:43:41
- * @LastEditors: diaochan
- * @LastEditTime: 2024-06-09 16:58:42
+ * @LastEditors: rueen
+ * @LastEditTime: 2024-06-10 20:39:31
  * @Description: 
  */
 const DATA = [{
@@ -40,43 +40,71 @@ const DATA = [{
   name: '4',
   avatar: 'https://images.pexels.com/photos/25002962/pexels-photo-25002962.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   roleType: 1,
-  relatedIds: [2,6]
+  relatedIds: [2,6],
+  describe: {
+    title: '宇宙第一大美女',
+    content: '<div>蜀道难 难于上青天</div>'
+  }
 },{
   id: 5,
   name: '5',
   avatar: 'https://images.pexels.com/photos/25232982/pexels-photo-25232982.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   roleType: 2,
-  relatedIds: [8,9]
+  relatedIds: [8,9],
+  describe: {
+    title: '宇宙第一大美女',
+    content: '<div>蜀道难 难于上青天</div>'
+  }
 },{
   id: 6,
   name: '6',
   avatar: 'https://images.pexels.com/photos/25242264/pexels-photo-25242264.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   roleType: 3,
-  relatedIds: [2,10]
+  relatedIds: [2,10],
+  describe: {
+    title: '宇宙第一大美女',
+    content: '<div>蜀道难 难于上青天</div>'
+  }
 },{
   id: 7,
   name: '7',
   avatar: 'https://images.pexels.com/photos/25205085/pexels-photo-25205085.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   roleType: 1,
-  relatedIds: [3,4]
+  relatedIds: [3,4],
+  describe: {
+    title: '宇宙第一大美女',
+    content: '<div>蜀道难 难于上青天</div>'
+  }
 },{
   id: 8,
   name: '8',
   avatar: 'https://images.pexels.com/photos/20532356/pexels-photo-20532356.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   roleType: 2,
-  relatedIds: [2]
+  relatedIds: [2],
+  describe: {
+    title: '宇宙第一大美女',
+    content: '<div>蜀道难 难于上青天</div>'
+  }
 },{
   id: 9,
   name: '9',
   avatar: 'https://images.pexels.com/photos/25232980/pexels-photo-25232980.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   roleType: 3,
-  relatedIds: [5]
+  relatedIds: [5],
+  describe: {
+    title: '宇宙第一大美女',
+    content: '<div>蜀道难 难于上青天</div>'
+  }
 },{
   id: 10,
   name: '10',
   avatar: 'https://images.pexels.com/photos/25003282/pexels-photo-25003282.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
   roleType: 3,
-  relatedIds: [1,2,3]
+  relatedIds: [1,2,3],
+  describe: {
+    title: '宇宙第一大美女',
+    content: '<div>蜀道难 难于上青天</div>'
+  }
 }];
 
 export default DATA;
