@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-11 16:40:10
+ * @LastEditTime: 2024-06-11 17:06:55
  * @Description: 
  */
 import DATA from './data';
@@ -307,7 +307,7 @@ const createItem = (id = null) => {
 }
 const getData = async () => {
   const res = await get({
-    url: '/ws/api/hallList',
+    url: 'https://unidt.ontheway168.cn/ws/api/hallList',
   });
   pendingList = [...res];
   createItem();
