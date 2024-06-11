@@ -2,11 +2,12 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-10 21:09:39
+ * @LastEditTime: 2024-06-11 08:39:08
  * @Description: 
  */
 import DATA from './data';
 import { debounce, isItemOrChild } from './public/lib';
+import axios from 'axios';
 
 const existedPosition = []; // 已存在的坐标
 const positionSize = 30; // 坐标距离 避免重叠
@@ -304,9 +305,25 @@ const createItem = (id = null) => {
   listElm.appendChild(itemElm);
   restartTimer();
 }
-const getData = () => {
-  pendingList = [...DATA];
-  createItem();
+const getData = async () => {
+  const res = await axios({
+    method: 'get',
+    url: 'https://unidt.ontheway168.cn/ws/api/hallList',
+    headers: {'access-control-allow-origin': '*'}
+  });
+  console.log(res)
+  // axios.get('')
+  // .then(function (response) {
+  //   pendingList = [...DATA];
+  //   createItem();
+  // })
+  // .catch(function (error) {
+  //   // handle error
+  //   console.log(error);
+  // })
+  // .finally(function () {
+  //   // always executed
+  // });
 }
 
 const addStyle = () => {
