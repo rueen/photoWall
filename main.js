@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-11 08:39:08
+ * @LastEditTime: 2024-06-11 10:26:27
  * @Description: 
  */
 import DATA from './data';
@@ -306,12 +306,12 @@ const createItem = (id = null) => {
   restartTimer();
 }
 const getData = async () => {
-  const res = await axios({
-    method: 'get',
-    url: 'https://unidt.ontheway168.cn/ws/api/hallList',
-    headers: {'access-control-allow-origin': '*'}
-  });
-  console.log(res)
+  // const res = await axios({
+  //   method: 'get',
+  //   url: 'https://unidt.ontheway168.cn/ws/api/hallList',
+  //   headers: {'access-control-allow-origin': '*'}
+  // });
+  // console.log(res)
   // axios.get('')
   // .then(function (response) {
   //   pendingList = [...DATA];
@@ -324,6 +324,8 @@ const getData = async () => {
   // .finally(function () {
   //   // always executed
   // });
+  pendingList = [...DATA];
+  createItem();
 }
 
 const addStyle = () => {
