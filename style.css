@@ -150,7 +150,7 @@ body{
   justify-content: center;
   align-items: center;
 }
-.about .close img{
+.about .close svg{
   width: 20px;
   height: 20px;
 }

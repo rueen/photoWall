@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-11 17:06:55
+ * @LastEditTime: 2024-06-11 17:11:44
  * @Description: 
  */
 import DATA from './data';
@@ -146,7 +146,7 @@ const showModal = (item) => {
   const html = `
     <div class="popup">
       <div class="close" id="modalClose">
-        <img src="./images/close.png" alt="">
+      <svg t="1718097053116" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4255" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M573.021091 512.512l330.938182 330.938182-60.346182 60.346182-330.938182-330.938182L179.525818 906.007273l-60.509091-60.532364 333.125818-333.149091L119.179636 179.362909l60.346182-60.369454 332.986182 332.986181L845.474909 118.993455l60.509091 60.532363-332.962909 332.986182z" fill="#333333" p-id="4256"></path></svg>
       </div>
       <div class="title" id="modalTitle">${describe.title}</div>
       <div class="description" id="modalDes">${describe.content}</div>
@@ -307,7 +307,7 @@ const createItem = (id = null) => {
 }
 const getData = async () => {
   const res = await get({
-    url: 'https://unidt.ontheway168.cn/ws/api/hallList',
+    url: '/ws/api/hallList',
   });
   pendingList = [...res];
   createItem();
