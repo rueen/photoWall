@@ -2,23 +2,23 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-14 17:16:05
+ * @LastEditTime: 2024-06-14 18:04:25
  * @Description: 
  */
 import DATA from './data';
 import { debounce, isItemOrChild } from './public/lib';
 import { get } from './public/request';
 
-const existedPosition = []; // 已存在的坐标
-const positionSize = 30; // 坐标距离 避免重叠
+// const existedPosition = []; // 已存在的坐标
+let screenWidth = window.innerWidth;
+let screenHeight = window.innerHeight;
+let itemSize = parseInt(Math.min(screenWidth, screenHeight)/ 8); // 粒子尺寸 px
+const positionSize = itemSize; // 坐标距离 避免重叠
 const baseSpeed = 100; // 速度 px/s
 const delay = 2500; // ms
 let pendingList = []; // 等待的列表
 let createItemTimer = null;
 let modalVisible = false; // 是否打开弹窗
-let screenWidth = window.innerWidth;
-let screenHeight = window.innerHeight;
-let itemSize = parseInt(Math.min(screenWidth, screenHeight)/ 8); // 粒子尺寸 px
 let duration= Math.ceil(screenWidth / baseSpeed) * 1000;
 let isPause = false; // 页面是否已暂停
 // 调整布局
@@ -30,13 +30,29 @@ const resize = () => {
   document.documentElement.style.fontSize = `${parseInt(screenWidth/100)}px`;
 }
 
+// 获取所有已存在元素坐标
+const getExistedPosition = () => {
+  const allItemElm = document.querySelectorAll('.item');
+  let arr = [];
+
+  allItemElm.forEach(item => {
+    const rect = item.getBoundingClientRect();
+    arr.push({
+      x: rect.x,
+      y: rect.y
+    })
+  })
+  return arr;
+}
+
 // 获取随机坐标
 const getRandomPosition = (position = {}) => {
   let x;
   let y;
   let i = 0;
   const fun = () => {
-    let randomX = Math.floor(Math.random() * (screenWidth - itemSize));
+    // let randomX = Math.floor(Math.random() * (screenWidth - itemSize));
+    let randomX = 0;
     if(position.x != null){
       randomX = position.x;
     }
@@ -44,10 +60,12 @@ const getRandomPosition = (position = {}) => {
     if(position.y != null){
       randomY = Math.floor(Math.random() * (screenHeight - itemSize));
     }
+    const existedPosition = getExistedPosition();
     const existed = existedPosition.filter(item => {
       return Math.abs(item.x - randomX) < positionSize && Math.abs(item.y - randomY) < positionSize;
     });
-    if(existed.length > 0 && i < 3 && (position.x != null && position.y != null)){
+    // console.log(existed, randomX, randomY, existedPosition)
+    if(existed.length > 0 && i < 5){
       // 坐标重合
       console.log('坐标重合', existed, randomX, randomY);
       i += 1;
@@ -161,7 +179,8 @@ const showModal = (item) => {
     modal.innerHTML = html;
     document.body.appendChild(modal);
     modal.addEventListener('click', function(event) {
-      if(event.target.id === 'modalClose' || event.target.parentNode.id === 'modalClose'){
+      const target = event.target;
+      if(target.classList.contains('close') || !!target.closest('.close')){
         modalVisible = false;
         modal.classList.remove('visible');
         play();
@@ -262,10 +281,10 @@ const createItem = (id = null) => {
     firstInLine = pendingList.shift();
   }
   const position = getRandomPosition();
-  existedPosition.push({
-    id: firstInLine.id,
-    ...position
-  })
+  // existedPosition.push({
+  //   id: firstInLine.id,
+  //   ...position
+  // })
   const listElm = document.getElementById('list');
   const itemElm = document.createElement('div');
   itemElm.id = `item_${firstInLine.id}`;
@@ -360,7 +379,9 @@ document.addEventListener("visibilitychange", function() {
     pause();
   } else {
     // 页面可见时
-    play();
+    if(!modalVisible && isPause){
+      play();
+    }
   }
 });
 const fullscreenBtn = document.getElementById('fullscreen');
