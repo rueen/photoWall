@@ -41,9 +41,6 @@ body{
   overflow: hidden;
 }
 .item {
-  /* opacity: 0; */
-  /* transform: translateX(-25%) scale(0.2); 初始状态小且半透明 */
-  transition: opacity 0.2s, transform 0.2s; /* 平滑过渡 */
   border-radius: 50%;
   overflow: hidden;
   position: absolute;
