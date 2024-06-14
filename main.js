@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-14 21:45:02
+ * @LastEditTime: 2024-06-14 22:07:35
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -49,10 +49,10 @@ const getExistedPosition = () => {
 const getRandomPosition = (position = {}) => {
   let x;
   let y;
+  let israndom = (position.x == null && position.y == null);
   let i = 0;
   const fun = () => {
-    // let randomX = Math.floor(Math.random() * (screenWidth - itemSize));
-    let randomX = 0;
+    let randomX = Math.floor(Math.random() * (screenWidth - itemSize));
     if(position.x != null){
       randomX = position.x;
     }
@@ -87,6 +87,7 @@ const getRandomPosition = (position = {}) => {
   return {
     x,
     y,
+    israndom,
     duration: duration + Math.random()*10000
   };
 }
@@ -208,7 +209,7 @@ const showRelation = (item) => {
     // 如果元素不在画布内 立即创建
     if(!elm){
       createItem(id);
-      _delay += 310;
+      _delay += 100;
     } else {
       const rect = elm.getBoundingClientRect();
       // 如果元素即将移出屏幕(已移出元素直径的1/4) 重新创建
@@ -216,7 +217,7 @@ const showRelation = (item) => {
         const _item = DATA.find(i => i.id === id);
         requeue(_item);
         createItem(id);
-        _delay += 350;
+        _delay += 100;
       }
     }
   })
@@ -271,7 +272,7 @@ const requeue = (item) => {
   pendingList.push(item);
 }
 
-const createItem = (id = null) => {
+const createItem = (id = null, p = {}) => {
   let firstInLine;
   const elm = document.getElementById(id);
   if(elm){
@@ -283,20 +284,30 @@ const createItem = (id = null) => {
   } else {
     firstInLine = pendingList.shift();
   }
-  const position = getRandomPosition();
+  if(id == null){
+    p = { x: 0 };
+  }
+  const position = getRandomPosition(p);
   // existedPosition.push({
   //   id: firstInLine.id,
   //   ...position
   // })
+  let animation = `scaleUp .3s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`;
+  console.log(position)
+  
   const listElm = document.getElementById('list');
   const itemElm = document.createElement('div');
   itemElm.id = `item_${firstInLine.id}`;
   itemElm.idKey = firstInLine.id;
   itemElm.style.width = `${itemSize}px`;
   itemElm.style.height = `${itemSize}px`;
+  if(position.israndom){
+    animation = `fadeIn .1s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`;
+    itemElm.style.left = `${position.x}px`;
+  }
   itemElm.style.top = `${position.y}px`;
   itemElm.classList.add('item');
-  itemElm.style.animation = `scaleUp .3s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`; // 触发动画
+  itemElm.style.animation = animation; // 触发动画
   itemElm.innerHTML = `
     <div class="avatar" style="background-image: url(${firstInLine.avatar})"></div>
       <div class="mask mask_${firstInLine.roleType}"></div>
