@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-14 17:09:11
+ * @LastEditTime: 2024-06-14 17:16:05
  * @Description: 
  */
 import DATA from './data';
@@ -27,7 +27,7 @@ const resize = () => {
   screenHeight = window.innerHeight;
   itemSize = parseInt(Math.min(screenWidth, screenHeight)/ 8); // 粒子尺寸 px
   duration= Math.ceil(screenWidth / baseSpeed) * 1000;
-  document.documentElement.style.fontSize = `${parseInt(screenHeight/50)}px`;
+  document.documentElement.style.fontSize = `${parseInt(screenWidth/100)}px`;
 }
 
 // 获取随机坐标
@@ -349,7 +349,7 @@ function toggleFullScreen() {
     }
   }
 }
-document.documentElement.style.fontSize = `${parseInt(screenHeight/50)}px`;
+document.documentElement.style.fontSize = `${parseInt(screenWidth/100)}px`;
 document.addEventListener('DOMContentLoaded', () => {
   addStyle();
   getData();
