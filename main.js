@@ -2,14 +2,14 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-14 21:34:05
+ * @LastEditTime: 2024-06-14 21:45:02
  * @Description: 
  */
-import DATA from './data';
 import { debounce, isItemOrChild } from './public/lib';
 import { get } from './public/request';
 
 // const existedPosition = []; // 已存在的坐标
+let DATA = [];
 let screenWidth = window.innerWidth;
 let screenHeight = window.innerHeight;
 let itemSize = parseInt(Math.min(screenWidth, screenHeight)/ 8); // 粒子尺寸 px
@@ -202,12 +202,13 @@ const showModal = (item) => {
 const showRelation = (item) => {
   let _delay = 0;
   const relatedIds = item.relatedIds;
+  pause();
   relatedIds.forEach(id => {
     const elm = document.getElementById(`item_${id}`);
     // 如果元素不在画布内 立即创建
     if(!elm){
       createItem(id);
-      _delay += 350;
+      _delay += 310;
     } else {
       const rect = elm.getBoundingClientRect();
       // 如果元素即将移出屏幕(已移出元素直径的1/4) 重新创建
@@ -331,6 +332,7 @@ const getData = async () => {
   const res = await get({
     url: '/ws/api/hallList',
   });
+  DATA = [...res];
   pendingList = [...res];
   createItem();
 }
