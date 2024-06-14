@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-14 22:07:35
+ * @LastEditTime: 2024-06-14 22:09:21
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -293,7 +293,7 @@ const createItem = (id = null, p = {}) => {
   //   ...position
   // })
   let animation = `scaleUp .3s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`;
-  console.log(position)
+  // console.log(position)
   
   const listElm = document.getElementById('list');
   const itemElm = document.createElement('div');
@@ -407,13 +407,12 @@ document.addEventListener('fullscreenchange', function(event) {
 window.addEventListener('resize', debounce(function(event) {
   resize();
 }, 1000));
-// document.body.addEventListener('mousemove', function(event) {
-//   const target = event.target;
-//   if (!isItemOrChild(target, 'item')) {
-//     if(!modalVisible && isPause){
-//       console.log(isPause, '---');
-//       play();
-//       clearSVG();
-//     }
-//   }
-// });
+document.body.addEventListener('mousemove', function(event) {
+  const target = event.target;
+  if (!isItemOrChild(target, 'item')) {
+    if(!modalVisible && isPause){
+      play();
+      clearSVG();
+    }
+  }
+});
