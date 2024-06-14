@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-14 18:04:25
+ * @LastEditTime: 2024-06-14 21:34:05
  * @Description: 
  */
 import DATA from './data';
@@ -85,7 +85,9 @@ const getRandomPosition = (position = {}) => {
   }
   fun();
   return {
-    x, y
+    x,
+    y,
+    duration: duration + Math.random()*10000
   };
 }
 
@@ -293,7 +295,7 @@ const createItem = (id = null) => {
   itemElm.style.height = `${itemSize}px`;
   itemElm.style.top = `${position.y}px`;
   itemElm.classList.add('item');
-  itemElm.style.animation = `scaleUp .3s linear forwards, scrollRight ${duration / 1000}s linear .3s forwards`; // 触发动画
+  itemElm.style.animation = `scaleUp .3s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`; // 触发动画
   itemElm.innerHTML = `
     <div class="avatar" style="background-image: url(${firstInLine.avatar})"></div>
       <div class="mask mask_${firstInLine.roleType}"></div>
