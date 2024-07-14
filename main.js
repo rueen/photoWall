@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-06-14 22:09:21
+ * @LastEditTime: 2024-07-14 14:47:17
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -341,10 +341,10 @@ const createItem = (id = null, p = {}) => {
 }
 const getData = async () => {
   const res = await get({
-    url: '/ws/api/hallList',
+    url: '/site/api/hallList',
   });
-  DATA = [...res];
-  pendingList = [...res];
+  DATA = [...res.Data];
+  pendingList = [...res.Data];
   createItem();
 }
 
