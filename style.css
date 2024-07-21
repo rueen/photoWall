@@ -58,15 +58,14 @@ body{
 }
 .name{
   width: 100%;
-  height: 100%;
   position: absolute;
   left: 0;
-  top: 0;
+  bottom: 0;
   color: #fff;
   display: flex;
   justify-content: center;
-  align-items: center;
-  font-size: 1rem;
+  margin-bottom: 12%;
+  font-size: .8rem;
   z-index: 4;
 }
 .mask{
