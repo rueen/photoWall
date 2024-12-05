@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-07-14 14:47:17
+ * @LastEditTime: 2024-12-05 17:44:05
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -30,6 +30,17 @@ const resize = () => {
   document.documentElement.style.fontSize = `${parseInt(screenWidth/100)}px`;
 }
 
+// 获取元素尺寸
+const getItemSize = (item) => {
+  let size = itemSize;
+  if((item.roleType - 0) === 2){
+    size = itemSize * 0.6
+  } else if((item.roleType - 0) === 3){
+    size = itemSize * 0.8
+  }
+  return size;
+}
+
 // 获取所有已存在元素坐标
 const getExistedPosition = () => {
   const allItemElm = document.querySelectorAll('.item');
@@ -46,19 +57,20 @@ const getExistedPosition = () => {
 }
 
 // 获取随机坐标
-const getRandomPosition = (position = {}) => {
+const getRandomPosition = (position = {}, item) => {
   let x;
   let y;
   let israndom = (position.x == null && position.y == null);
   let i = 0;
+  let size = getItemSize(item);
   const fun = () => {
-    let randomX = Math.floor(Math.random() * (screenWidth - itemSize));
+    let randomX = Math.floor(Math.random() * (screenWidth - size));
     if(position.x != null){
       randomX = position.x;
     }
-    let randomY = Math.floor(Math.random() * (screenHeight - itemSize));
+    let randomY = Math.floor(Math.random() * (screenHeight - size));
     if(position.y != null){
-      randomY = Math.floor(Math.random() * (screenHeight - itemSize));
+      randomY = Math.floor(Math.random() * (screenHeight - size));
     }
     const existedPosition = getExistedPosition();
     const existed = existedPosition.filter(item => {
@@ -96,8 +108,8 @@ const getRandomPosition = (position = {}) => {
 const getItemCenter = (id) => {
   const itemElem = document.getElementById(`item_${id}`);
   const rect = itemElem.getBoundingClientRect();
-  const x = parseInt(rect.left + itemSize/2);
-  const y = parseInt(rect.top + itemSize/2);
+  const x = parseInt(rect.left + rect.width/2);
+  const y = parseInt(rect.top + rect.width/2);
   return {x,y}
 }
 
@@ -151,9 +163,15 @@ const clearSVG = () => {
   lines.forEach(function(line) {
     line.remove(); // 删除每个line元素
   });
-  var elms = document.querySelectorAll('.blur');
+  var elms = document.querySelectorAll('.blur.activeItem');
   elms.forEach(function(elm) {
     elm.classList.remove('blur');
+  });
+  var bgElms = document.querySelectorAll('.bgItem');
+  bgElms.forEach(function(elm) {
+    if(!elm.classList.contains('blur')){
+      elm.classList.add('blur');
+    }
   });
 }
 
@@ -219,6 +237,7 @@ const showRelation = (item) => {
         createItem(id);
         _delay += 100;
       }
+      elm.classList.remove('blur');
     }
   })
   setTimeout(() => {
@@ -270,6 +289,40 @@ const requeue = (item) => {
   const parentNode = currentItemElm.parentNode;
   parentNode.removeChild(currentItemElm);
   pendingList.push(item);
+  createBgItem(item)
+}
+
+const createBgItem = (item) => {
+  const elm = document.getElementById(item.id);
+  if(elm){
+    return;
+  }
+  const position = getRandomPosition({}, item);
+  const listElm = document.getElementById('list');
+  const itemElm = document.createElement('div');
+  itemElm.id = `item_${item.id}`;
+  itemElm.idKey = item.id;
+  let size = getItemSize(item);
+  itemElm.style.width = `${size}px`;
+  itemElm.style.height = `${size}px`;
+  // let animation = `fadeIn .1s linear forwards`;
+  itemElm.style.left = `${position.x}px`;
+  itemElm.style.top = `${position.y}px`;
+  itemElm.classList.add('item');
+  itemElm.classList.add('bgItem');
+  itemElm.classList.add('blur');
+  // itemElm.style.animation = animation; // 触发动画
+  itemElm.innerHTML = `
+    <div class="avatar" style="background-image: url(${item.avatar})"></div>
+      <div class="mask mask_${item.roleType}"></div>
+    <div class="name" style="font-size:${size/8}px">${item.name}</div>`;
+  listElm.appendChild(itemElm);
+}
+
+const removeBgItem = (item) => {
+  const currentItemElm = document.getElementById(`item_${item.id}`);
+  const parentNode = currentItemElm.parentNode;
+  parentNode.removeChild(currentItemElm);
 }
 
 const createItem = (id = null, p = {}) => {
@@ -284,10 +337,11 @@ const createItem = (id = null, p = {}) => {
   } else {
     firstInLine = pendingList.shift();
   }
+  removeBgItem(firstInLine);
   if(id == null){
     p = { x: 0 };
   }
-  const position = getRandomPosition(p);
+  const position = getRandomPosition(p, firstInLine);
   // existedPosition.push({
   //   id: firstInLine.id,
   //   ...position
@@ -299,19 +353,21 @@ const createItem = (id = null, p = {}) => {
   const itemElm = document.createElement('div');
   itemElm.id = `item_${firstInLine.id}`;
   itemElm.idKey = firstInLine.id;
-  itemElm.style.width = `${itemSize}px`;
-  itemElm.style.height = `${itemSize}px`;
+  let size = getItemSize(firstInLine);
+  itemElm.style.width = `${size}px`;
+  itemElm.style.height = `${size}px`;
   if(position.israndom){
     animation = `fadeIn .1s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`;
     itemElm.style.left = `${position.x}px`;
   }
   itemElm.style.top = `${position.y}px`;
   itemElm.classList.add('item');
+  itemElm.classList.add('activeItem');
   itemElm.style.animation = animation; // 触发动画
   itemElm.innerHTML = `
     <div class="avatar" style="background-image: url(${firstInLine.avatar})"></div>
       <div class="mask mask_${firstInLine.roleType}"></div>
-    <div class="name">${firstInLine.name}</div>`;
+    <div class="name" style="font-size:${size/8}px">${firstInLine.name}</div>`;
   itemElm.addEventListener('animationend', function(e) {
     const {animationName} = e;
     if(animationName === 'scrollRight'){
@@ -339,12 +395,16 @@ const createItem = (id = null, p = {}) => {
   listElm.appendChild(itemElm);
   restartTimer();
 }
+
 const getData = async () => {
   const res = await get({
     url: '/site/api/hallList',
   });
   DATA = [...res.Data];
   pendingList = [...res.Data];
+  pendingList.forEach(item => {
+    createBgItem(item)
+  })
   createItem();
 }
 
@@ -352,7 +412,7 @@ const addStyle = () => {
   const style = document.createElement('style');
   style.textContent = `
     :root {
-      --blur: ${itemSize/10}px; /* 这里定义了模糊效果的强度 */
+      --blur: ${itemSize/8}px; /* 这里定义了模糊效果的强度 */
     }
   `;
   document.head.appendChild(style);

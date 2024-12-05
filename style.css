@@ -47,9 +47,13 @@ body{
   z-index: 2;
   cursor: pointer;
 }
+.bgItem{
+  animation: fadeIn .1s linear forwards;
+}
 .blur{
   filter: blur(var(--blur));
   z-index: 0;
+  opacity: .7!important;
 }
 .avatar{
   width: 100%;
@@ -65,7 +69,6 @@ body{
   display: flex;
   justify-content: center;
   margin-bottom: 12%;
-  font-size: .8rem;
   z-index: 4;
 }
 .mask{
