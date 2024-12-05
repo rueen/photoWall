@@ -48,7 +48,17 @@ body{
   cursor: pointer;
 }
 .bgItem{
-  animation: fadeIn .1s linear forwards;
+  /* animation: fadeIn .1s linear forwards; */
+  animation: float 10s ease-in-out infinite;
+  animation-delay: calc(var(--delay) * -0.1s);
+}
+@keyframes float {
+  0%, 100% {
+    transform: translateX(0) scale(var(--scale1));
+  }
+  50% {
+    transform: translateX(var(--distance)) scale(var(--scale2));
+  }
 }
 .blur{
   filter: blur(var(--blur));

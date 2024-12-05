@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-12-05 17:48:16
+ * @LastEditTime: 2024-12-05 20:42:02
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -292,6 +292,10 @@ const requeue = (item) => {
   createBgItem(item)
 }
 
+function getRandomArbitrary(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
 const createBgItem = (item) => {
   const elm = document.getElementById(item.id);
   if(elm){
@@ -305,13 +309,15 @@ const createBgItem = (item) => {
   let size = getItemSize(item);
   itemElm.style.width = `${size}px`;
   itemElm.style.height = `${size}px`;
-  // let animation = `fadeIn .1s linear forwards`;
   itemElm.style.left = `${position.x}px`;
   itemElm.style.top = `${position.y}px`;
+  itemElm.style.setProperty('--delay', item.id - 0);
+  itemElm.style.setProperty('--distance', `${getRandomArbitrary(size * -1, size)}px`);
+  itemElm.style.setProperty('--scale1', getRandomArbitrary(0.8, 1));
+  itemElm.style.setProperty('--scale2', getRandomArbitrary(0.8, 1));
   itemElm.classList.add('item');
   itemElm.classList.add('bgItem');
   itemElm.classList.add('blur');
-  // itemElm.style.animation = animation; // 触发动画
   itemElm.innerHTML = `
     <div class="avatar" style="background-image: url(${item.avatar})"></div>
       <div class="mask mask_${item.roleType}"></div>
