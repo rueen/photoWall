@@ -53,7 +53,7 @@ body{
 .blur{
   filter: blur(var(--blur));
   z-index: 0;
-  opacity: .7!important;
+  opacity: .8!important;
 }
 .avatar{
   width: 100%;

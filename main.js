@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-12-05 17:44:05
+ * @LastEditTime: 2024-12-05 17:48:16
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -412,7 +412,7 @@ const addStyle = () => {
   const style = document.createElement('style');
   style.textContent = `
     :root {
-      --blur: ${itemSize/8}px; /* 这里定义了模糊效果的强度 */
+      --blur: ${itemSize/10}px; /* 这里定义了模糊效果的强度 */
     }
   `;
   document.head.appendChild(style);
