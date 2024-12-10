@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-12-05 20:42:02
+ * @LastEditTime: 2024-12-10 19:39:25
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -403,8 +403,13 @@ const createItem = (id = null, p = {}) => {
 }
 
 const getData = async () => {
+  const params = new URLSearchParams(window.location.search);
+  const parent = params.get('parent');
   const res = await get({
     url: '/site/api/hallList',
+    params: {
+      parent,
+    }
   });
   DATA = [...res.Data];
   pendingList = [...res.Data];
