@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-12-16 16:44:42
+ * @LastEditTime: 2024-12-16 17:41:25
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -40,9 +40,18 @@ const getItemSize = (item) => {
   return size;
 }
 
+let allItemElm;
+const getallItemElm = () => {
+  if(!allItemElm || (allItemElm.length < (DATA.length - 1))){
+    allItemElm = document.querySelectorAll('.item');
+  }
+
+  return allItemElm;
+}
+
 // 获取所有已存在元素坐标
 const getExistedPosition = () => {
-  const allItemElm = document.querySelectorAll('.item');
+  const allItemElm = getallItemElm();
   let arr = [];
 
   allItemElm.forEach(item => {
@@ -72,26 +81,21 @@ const getRandomPosition = (position = {}, item) => {
       randomY = Math.floor(Math.random() * (screenHeight - size));
     }
     const existedPosition = getExistedPosition();
-    const existed = existedPosition.filter(item => {
+    let existed = existedPosition.filter(item => {
       return Math.abs(item.x - randomX) < positionSize && Math.abs(item.y - randomY) < positionSize;
     });
-    if(existed.length > 0 && i < 5){
-      // 坐标重合
+    while (existed.length > 0 && i < 5) {
       console.log('坐标重合', existed, randomX, randomY);
+      randomX = Math.floor(Math.random() * (screenWidth - size));
+      randomY = Math.floor(Math.random() * (screenHeight - size));
+      existed = existedPosition.filter(p => {
+        return Math.abs(p.x - randomX) < positionSize && Math.abs(p.y - randomY) < positionSize;
+      });
       i += 1;
-      fun();
-    } else {
-      if(position.x != null){
-        x = position.x;
-      } else {
-        x = randomX;
-      }
-      if(position.y != null){
-        y = position.y;
-      } else {
-        y = randomY;
-      }
     }
+    
+    x = position.x != null ? position.x : randomX;
+    y = position.y != null ? position.y : randomY;
   }
   fun();
   return {
@@ -471,7 +475,7 @@ document.addEventListener('fullscreenchange', function(event) {
 window.addEventListener('resize', debounce(function(event) {
   resize();
 }, 1000));
-document.body.addEventListener('mousemove', function(event) {
+document.getElementById('list').addEventListener('mousemove', function(event) {
   const target = event.target;
   if (!isItemOrChild(target, 'item')) {
     if(!modalVisible && isPause){
