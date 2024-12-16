@@ -2,7 +2,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-12-16 17:41:25
+ * @LastEditTime: 2024-12-16 19:36:19
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -29,13 +29,20 @@ const resize = () => {
   document.documentElement.style.fontSize = `${parseInt(screenWidth/100)}px`;
 }
 
+const sizeRoleType = {};
 // 获取元素尺寸
 const getItemSize = (item) => {
   let size = itemSize;
-  if((item.roleType - 0) === 2){
-    size = itemSize * 0.6
-  } else if((item.roleType - 0) === 3){
-    size = itemSize * 0.8
+  const roleType = item.roleType - 0;
+  if(sizeRoleType[roleType] != null){
+    size = sizeRoleType[roleType];
+  } else {
+    if(roleType === 2){
+      size = itemSize * 0.6
+    } else if(roleType === 3){
+      size = itemSize * 0.8
+    }
+    sizeRoleType[roleType] = size;
   }
   return size;
 }
@@ -65,45 +72,28 @@ const getExistedPosition = () => {
 }
 
 // 获取随机坐标
-const getRandomPosition = (position = {}, item) => {
-  let x;
-  let y;
-  let israndom = (position.x == null && position.y == null);
-  let i = 0;
-  let size = getItemSize(item);
-  const fun = () => {
-    let randomX = Math.floor(Math.random() * (screenWidth - size));
-    if(position.x != null){
-      randomX = position.x;
-    }
-    let randomY = Math.floor(Math.random() * (screenHeight - size));
-    if(position.y != null){
-      randomY = Math.floor(Math.random() * (screenHeight - size));
-    }
+const getRandomPosition = (worker, position = {}, item) => {
+  return new Promise((resolve) => {
+    let x;
+    let y;
+    let israndom = (position.x == null && position.y == null);
+    // let i = 0;
+    let size = getItemSize(item);
     const existedPosition = getExistedPosition();
-    let existed = existedPosition.filter(item => {
-      return Math.abs(item.x - randomX) < positionSize && Math.abs(item.y - randomY) < positionSize;
+    worker.postMessage({
+      position, screenWidth, screenHeight, existedPosition, positionSize, size
     });
-    while (existed.length > 0 && i < 5) {
-      console.log('坐标重合', existed, randomX, randomY);
-      randomX = Math.floor(Math.random() * (screenWidth - size));
-      randomY = Math.floor(Math.random() * (screenHeight - size));
-      existed = existedPosition.filter(p => {
-        return Math.abs(p.x - randomX) < positionSize && Math.abs(p.y - randomY) < positionSize;
-      });
-      i += 1;
+    worker.onmessage = (e) => {
+      x = e.data.x;
+      y = e.data.y;
+      resolve({
+        x,
+        y,
+        israndom,
+        duration: duration + Math.random()*10000
+      })
     }
-    
-    x = position.x != null ? position.x : randomX;
-    y = position.y != null ? position.y : randomY;
-  }
-  fun();
-  return {
-    x,
-    y,
-    israndom,
-    duration: duration + Math.random()*10000
-  };
+  })
 }
 
 // 获取圆心
@@ -161,10 +151,7 @@ const createLine = (item) => {
 
 const clearSVG = () => {
   const svg = document.getElementById('svg');
-  const lines = svg.querySelectorAll('line');
-  lines.forEach(function(line) {
-    line.remove(); // 删除每个line元素
-  });
+  svg.innerHTML = '';
   var elms = document.querySelectorAll('.blur.activeItem');
   elms.forEach(function(elm) {
     elm.classList.remove('blur');
@@ -298,12 +285,13 @@ function getRandomArbitrary(min, max) {
   return Math.random() * (max - min) + min;
 }
 
-const createBgItem = (item) => {
+const createBgItem = async (item) => {
   const elm = document.getElementById(item.id);
   if(elm){
     return;
   }
-  const position = getRandomPosition({}, item);
+  const worker = new Worker('worker.js');
+  const position = await getRandomPosition(worker, {}, item);
   const listElm = document.getElementById('list');
   const itemElm = document.createElement('div');
   itemElm.id = `item_${item.id}`;
@@ -329,11 +317,13 @@ const createBgItem = (item) => {
 
 const removeBgItem = (item) => {
   const currentItemElm = document.getElementById(`item_${item.id}`);
-  const parentNode = currentItemElm.parentNode;
-  parentNode.removeChild(currentItemElm);
+  if(currentItemElm){
+    const parentNode = currentItemElm.parentNode;
+    parentNode.removeChild(currentItemElm);
+  }
 }
 
-const createItem = (id = null, p = {}) => {
+const createItem = async (id = null, p = {}) => {
   let firstInLine;
   const elm = document.getElementById(id);
   if(elm){
@@ -349,7 +339,8 @@ const createItem = (id = null, p = {}) => {
   if(id == null){
     p = { x: 0 };
   }
-  const position = getRandomPosition(p, firstInLine);
+  const worker = new Worker('worker.js');
+  const position = await getRandomPosition(worker, p, firstInLine);
   let animation = `scaleUp .3s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`;
   
   const listElm = document.getElementById('list');
@@ -413,7 +404,9 @@ const getData = async () => {
   pendingList.forEach(item => {
     createBgItem(item)
   })
-  createItem();
+  setTimeout(() => {
+    createItem();
+  }, 1000)
 }
 
 const addStyle = () => {
