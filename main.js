@@ -2,13 +2,12 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-12-10 19:39:25
+ * @LastEditTime: 2024-12-16 16:44:42
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
 import { get } from './public/request';
 
-// const existedPosition = []; // 已存在的坐标
 let DATA = [];
 let screenWidth = window.innerWidth;
 let screenHeight = window.innerHeight;
@@ -76,7 +75,6 @@ const getRandomPosition = (position = {}, item) => {
     const existed = existedPosition.filter(item => {
       return Math.abs(item.x - randomX) < positionSize && Math.abs(item.y - randomY) < positionSize;
     });
-    // console.log(existed, randomX, randomY, existedPosition)
     if(existed.length > 0 && i < 5){
       // 坐标重合
       console.log('坐标重合', existed, randomX, randomY);
@@ -348,12 +346,7 @@ const createItem = (id = null, p = {}) => {
     p = { x: 0 };
   }
   const position = getRandomPosition(p, firstInLine);
-  // existedPosition.push({
-  //   id: firstInLine.id,
-  //   ...position
-  // })
   let animation = `scaleUp .3s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`;
-  // console.log(position)
   
   const listElm = document.getElementById('list');
   const itemElm = document.createElement('div');
