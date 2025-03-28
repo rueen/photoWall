@@ -1,8 +1,9 @@
+// 修改 requeue 函数
 /*
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2024-12-16 19:36:19
+ * @LastEditTime: 2025-03-28 11:13:42
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -20,6 +21,9 @@ let createItemTimer = null;
 let modalVisible = false; // 是否打开弹窗
 let duration= Math.ceil(screenWidth / baseSpeed) * 1000;
 let isPause = false; // 页面是否已暂停
+// 创建全局的 Worker 实例
+let positionWorker = null;
+
 // 调整布局
 const resize = () => {
   screenWidth = window.innerWidth;
@@ -273,12 +277,14 @@ const play = () => {
 }
 
 // 移出屏幕 重新排队
-const requeue = (item) => {
+const requeue = async (item) => {
   const currentItemElm = document.getElementById(`item_${item.id}`);
   const parentNode = currentItemElm.parentNode;
   parentNode.removeChild(currentItemElm);
   pendingList.push(item);
-  createBgItem(item)
+  // 添加延迟，确保之前的元素从DOM中完全移除
+  await new Promise(resolve => setTimeout(resolve, 50));
+  await createBgItem(item);
 }
 
 function getRandomArbitrary(min, max) {
@@ -290,8 +296,11 @@ const createBgItem = async (item) => {
   if(elm){
     return;
   }
-  const worker = new Worker('worker.js');
-  const position = await getRandomPosition(worker, {}, item);
+    // 为了避免重叠，先刷新一下已有元素的位置
+  getallItemElm();
+  
+  // 使用特殊标记，生成更分散的位置
+  const position = await getRandomPosition(positionWorker, {requeued: true}, item);
   const listElm = document.getElementById('list');
   const itemElm = document.createElement('div');
   itemElm.id = `item_${item.id}`;
@@ -339,8 +348,7 @@ const createItem = async (id = null, p = {}) => {
   if(id == null){
     p = { x: 0 };
   }
-  const worker = new Worker('worker.js');
-  const position = await getRandomPosition(worker, p, firstInLine);
+  const position = await getRandomPosition(positionWorker, p, firstInLine);
   let animation = `scaleUp .3s linear forwards, scrollRight ${position.duration / 1000}s linear .3s forwards`;
   
   const listElm = document.getElementById('list');
@@ -401,12 +409,22 @@ const getData = async () => {
   });
   DATA = [...res.Data];
   pendingList = [...res.Data];
-  pendingList.forEach(item => {
-    createBgItem(item)
-  })
-  setTimeout(() => {
-    createItem();
-  }, 1000)
+  // 按顺序创建背景项目，避免坐标重叠
+  const createBgItemsSequentially = async () => {
+    for (const item of pendingList) {
+      await createBgItem(item);
+      // 添加短暂延迟，确保后台计算不会同时进行
+      await new Promise(resolve => setTimeout(resolve, 10));
+    }
+    
+    // 全部背景项创建完成后，开始创建第一个活动项
+    setTimeout(() => {
+      createItem();
+    }, 1000);
+  };
+  
+  // 开始按顺序创建背景项
+  createBgItemsSequentially();
 }
 
 const addStyle = () => {
@@ -446,9 +464,20 @@ function toggleFullScreen() {
 }
 document.documentElement.style.fontSize = `${parseInt(screenWidth/100)}px`;
 document.addEventListener('DOMContentLoaded', () => {
+  // 初始化全局 Worker
+  positionWorker = new Worker('./public/worker.js');
+  
   addStyle();
   getData();
 });
+// 在页面卸载前终止 Worker
+window.addEventListener('beforeunload', () => {
+  if (positionWorker) {
+    positionWorker.terminate();
+    positionWorker = null;
+  }
+});
+
 document.addEventListener("visibilitychange", function() {
   if (document.hidden) {
     // 页面不可见时
