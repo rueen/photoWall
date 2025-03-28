@@ -3,7 +3,7 @@
  * @Author: diaochan
  * @Date: 2024-06-07 21:18:42
  * @LastEditors: rueen
- * @LastEditTime: 2025-03-28 11:13:42
+ * @LastEditTime: 2025-03-28 11:34:53
  * @Description: 
  */
 import { debounce, isItemOrChild } from './public/lib';
@@ -465,7 +465,7 @@ function toggleFullScreen() {
 document.documentElement.style.fontSize = `${parseInt(screenWidth/100)}px`;
 document.addEventListener('DOMContentLoaded', () => {
   // 初始化全局 Worker
-  positionWorker = new Worker('./public/worker.js');
+  positionWorker = new Worker('worker.js');
   
   addStyle();
   getData();
